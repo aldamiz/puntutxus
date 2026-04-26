@@ -2,7 +2,7 @@
 
 Otra forma de ganar puntutxus.
 
-Web mobile-first para preparar la nutrición de la Batalla de Rande 2026 (27 km, 15°C, 20 junio).
+Web mobile-first para que Txifon prepare la nutrición de la Batalla de Rande 2026 (27 km, 15°C, 20 junio).
 
 ## Estructura
 
