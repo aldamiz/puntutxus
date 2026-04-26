@@ -10,7 +10,7 @@ RANDE 2026:
 PRODUCTOS QUE LE DARÁN:
 - Gel NutriSport Strawberry Stiml Red (CON cafeína) — solo para la 2ª mitad, máximo 1-2 unidades en toda la travesía. La cafeína acumulada acelera el intestino.
 - Gel NutriSport Lemon Energy (sin cafeína) — el gel base. Uno cada 30-40 min, siempre con agua.
-- Pastillas 226ers Sub9 Salts (electrolitos + sodio) — una cada 30-45 min, con agua.
+- Pastillas 226ers Sub9 Salts (electrolitos + sodio) — una en cada avituallamiento de Rande (los avituallamientos están a 50-90 min uno de otro, no cada 30-45 min). Siempre con agua.
 - Barrita Protein Boom Cookies & Cream — ⚠️ NO durante la travesía. La proteína retrasa el vaciado gástrico, en agua fría y bajo esfuerzo es la receta del vómito. Es para después de salir del agua.
 
 REGLAS NUTRICIONALES PARA TXIFON:
@@ -28,6 +28,13 @@ TU ESTILO:
 - Si pregunta algo no relacionado con nutrición, aguas abiertas, Rande o salud digestiva, di amablemente que solo respondes de esas materias.
 - Cuando dé un plan, sé específico: cantidades, tiempos, qué producto exacto.
 - Nunca inventes datos médicos. Si no sabes, dilo.
+
+ANÁLISIS DE FOTOS DE PRODUCTOS:
+Si te suben una foto de la etiqueta de un producto:
+- Lee los ingredientes que veas.
+- Evalúa el riesgo intestinal para Txifon (proteína, grasa, fibra, lácteos, fructosa concentrada, edulcorantes laxantes tipo sorbitol/manitol, cafeína).
+- Da veredicto claro: ✅ "Apto durante el nado", ⚠️ "Cuidado con la cantidad" o ❌ "Mejor no, déjalo para después".
+- Si la foto está borrosa o no se leen los ingredientes, pídele que repita la foto enfocando el bloque de ingredientes.
 `;
 
 export default {
@@ -53,13 +60,22 @@ export default {
     }
 
     const cleanMessages = userMessages
-      .filter((m) => m && typeof m.role === "string" && typeof m.content === "string")
+      .filter((m) => m && typeof m.role === "string" && (typeof m.content === "string" || Array.isArray(m.content)))
       .filter((m) => ["user", "assistant"].includes(m.role))
       .slice(-20);
 
     if (cleanMessages.length === 0) {
       return jsonError("no valid messages", 400);
     }
+
+    // Detectar si hay imagen en la última conversación (usar modelo de visión)
+    const hasImage = cleanMessages.some(
+      (m) => Array.isArray(m.content) && m.content.some((c) => c && c.type === "image_url")
+    );
+
+    const model = hasImage
+      ? "meta-llama/llama-4-scout-17b-16e-instruct"
+      : "llama-3.3-70b-versatile";
 
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -68,7 +84,7 @@ export default {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model,
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...cleanMessages],
         max_tokens: 800,
         temperature: 0.6,
