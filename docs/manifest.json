@@ -9,6 +9,7 @@
   "theme_color": "#063562",
   "orientation": "portrait",
   "icons": [
-    { "src": "puntutxu.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "puntutxu.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "puntutxu-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
   ]
 }
